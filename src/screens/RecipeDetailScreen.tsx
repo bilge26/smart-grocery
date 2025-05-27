@@ -8,7 +8,7 @@ import { Picker } from '@react-native-picker/picker'; // yüklenmediyse: npm ins
 const RecipeDetailScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'RecipeDetail'>>();
   const { recipe } = route.params;
-  const { addToPlan, isInPlan } = usePlan();
+  const { addToPlan, plan } = usePlan();
 
   const days: Day[] = [
     'Pazartesi',
@@ -21,7 +21,7 @@ const RecipeDetailScreen = () => {
   ];
 
   const [selectedDay, setSelectedDay] = useState<Day>('Pazartesi');
-  const alreadyInPlan = recipe.id !== undefined ? isInPlan(recipe.id) : false;
+  const alreadyInPlan = plan[selectedDay]?.id === recipe.id;
 
 
   return (

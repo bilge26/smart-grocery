@@ -11,11 +11,14 @@ import PlanScreen from '../screens/PlanScreen';
 import ShoppingListScreen from '../screens/ShoppingListScreen';
 import AddRecipeScreen from '../screens/AddRecipeScreen';
 import { Recipe } from '../types/recipe';
+import FilteredRecipesScreen from '../screens/FilteredRecipesScreen';
+
 
 export type RootStackParamList = {
   Tabs: undefined;
   RecipeDetail: { recipe: Recipe };
-  AddRecipe: undefined; 
+  AddRecipe: undefined;
+  FilteredRecipes: { category: string };
 };
 
 const Tab = createBottomTabNavigator();
@@ -59,6 +62,13 @@ const MainNavigator = () => (
       <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
       <Stack.Screen name="RecipeDetail" component={RecipeDetailScreen} />
       <Stack.Screen name="AddRecipe" component={AddRecipeScreen} options={{ title: 'Tarif Ekle' }} />
+      <Stack.Screen
+  name="FilteredRecipes"
+  component={FilteredRecipesScreen}
+  options={({ route }) => ({
+    title: `${route.params.category} Tarifleri`,
+  })}
+/>
     </Stack.Navigator>
   </NavigationContainer>
 );
