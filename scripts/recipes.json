@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1010,
+    "name": "Karnabahar Tacos",
+    "cuisine": "Meksika",
+    "category": "akşam yemeği",
+    "tags": ["vegan", "glutensiz", "fit"],
+    "ingredients": ["1 küçük karnabahar", "Taco ekmeği (mısır)", "Zeytinyağı", "Kimyon", "Kırmızı biber", "Avokado", "Limon"],
+    "instructions": "Karnabaharı küçük parçalara ayırıp baharatlarla fırınlayın. Taco ekmeğine doldurup avokado ve limonla servis edin."
+  },
+  {
+    "id": 1011,
+    "name": "Fıstık Ezmeli Yulaf Lapası",
+    "cuisine": "Amerikan",
+    "category": "kahvaltı",
+    "tags": ["diyet", "protein", "enerjik"],
+    "ingredients": ["Yarım su bardağı yulaf", "1 su bardağı süt (veya bitkisel)", "1 yemek kaşığı fıstık ezmesi", "Muz", "Tarçın"],
+    "instructions": "Yulafı sütle pişirin. Üzerine fıstık ezmesi, dilimlenmiş muz ve tarçın ekleyin."
+  },
+  {
+    "id": 1012,
+    "name": "Nohutlu Kinoa Kasesi",
+    "cuisine": "Akdeniz",
+    "category": "öğle yemeği",
+    "tags": ["vegan", "sağlıklı", "besleyici"],
+    "ingredients": ["1 su bardağı haşlanmış nohut", "1 su bardağı kinoa", "Salatalık", "Domates", "Maydanoz", "Zeytinyağı", "Limon"],
+    "instructions": "Kinoayı haşlayın. Tüm malzemeleri karıştırıp zeytinyağı ve limonla tatlandırın."
+  },
+  {
+    "id": 1013,
+    "name": "Brokolili Omlet",
+    "cuisine": "Türk",
+    "category": "kahvaltı",
+    "tags": ["protein", "sebzeli", "pratik"],
+    "ingredients": ["2 yumurta", "Yarım su bardağı haşlanmış brokoli", "Tuz", "Karabiber", "Zeytinyağı"],
+    "instructions": "Yumurtaları çırpın, brokoliyle karıştırıp tavada pişirin. Tuz ve karabiberle tatlandırın."
+  },
+  {
+    "id": 1014,
+    "name": "Elmalı Kinoa Tatlısı",
+    "cuisine": "Uluslararası",
+    "category": "tatlı",
+    "tags": ["şekersiz", "fit", "glutensiz"],
+    "ingredients": ["1 elma", "Yarım su bardağı kinoa", "Tarçın", "Ceviz", "Hindistancevizi sütü"],
+    "instructions": "Kinoayı hindistancevizi sütü ile pişirin. Üzerine rendelenmiş elma, tarçın ve ceviz ekleyin. Ilık veya soğuk servis edin."
+  }
+]

@@ -1,6 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from 'firebase/firestore';
-// Your web app's Firebase configuration
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+
+
 export const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -10,6 +11,6 @@ export const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+

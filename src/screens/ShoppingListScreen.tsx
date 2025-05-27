@@ -1,5 +1,3 @@
-// src/screens/ShoppingListScreen.tsx
-
 import React, { useMemo, useState } from 'react';
 import {
   View,
@@ -10,15 +8,44 @@ import {
 } from 'react-native';
 import { usePlan } from '../context/PlanContext';
 
+// Basit sayı + isim ayrıştırıcı (örn: "2 yumurta")
+const parseIngredient = (ingredient: string): { name: string; quantity: number } => {
+  const match = ingredient.match(/^(\d+)\s+(.*)$/);
+  if (match) {
+    return {
+      quantity: parseInt(match[1], 10),
+      name: match[2].trim().toLowerCase(),
+    };
+  } else {
+    return {
+      quantity: 1,
+      name: ingredient.trim().toLowerCase(),
+    };
+  }
+};
+
 const ShoppingListScreen = () => {
   const { plan } = usePlan();
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
   const ingredients = useMemo(() => {
-    const allIngredients = Object.values(plan)
-      .filter((r) => r)
-      .flatMap((r) => r!.ingredients);
-    return Array.from(new Set(allIngredients));
+    const combined: Record<string, number> = {};
+
+    Object.values(plan)
+      .filter((r) => r && Array.isArray(r.ingredients))
+      .flatMap((r) => r!.ingredients)
+      .forEach((item) => {
+        const { name, quantity } = parseIngredient(item);
+        if (combined[name]) {
+          combined[name] += quantity;
+        } else {
+          combined[name] = quantity;
+        }
+      });
+
+    return Object.entries(combined).map(
+      ([name, quantity]) => `${quantity} ${name}`
+    );
   }, [plan]);
 
   const toggleItem = (item: string) => {

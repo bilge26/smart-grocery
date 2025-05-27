@@ -21,7 +21,8 @@ const RecipeDetailScreen = () => {
   ];
 
   const [selectedDay, setSelectedDay] = useState<Day>('Pazartesi');
-  const alreadyInPlan = isInPlan(recipe.id);
+  const alreadyInPlan = recipe.id !== undefined ? isInPlan(recipe.id) : false;
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
