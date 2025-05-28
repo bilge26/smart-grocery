@@ -1,16 +1,28 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Recipe } from '../types/recipe';
 
 export type Day =
-  | 'Pazartesi' | 'Salı' | 'Çarşamba' | 'Perşembe' | 'Cuma' | 'Cumartesi' | 'Pazar';
+  | 'Pazartesi'
+  | 'Salı'
+  | 'Çarşamba'
+  | 'Perşembe'
+  | 'Cuma'
+  | 'Cumartesi'
+  | 'Pazar';
 
 type PlanType = Record<Day, Recipe | null>;
 
 type PlanContextType = {
   plan: PlanType;
   addToPlan: (day: Day, recipe: Recipe) => void;
-  isInPlan: (id: number | string) => boolean;
+  isInPlan: (id: string) => boolean;
   clearPlan: () => void;
   userRecipes: Recipe[];
   addUserRecipe: (recipe: Recipe) => void;
@@ -27,6 +39,7 @@ const initialPlan: PlanType = {
 };
 
 const PlanContext = createContext<PlanContextType | undefined>(undefined);
+
 const PLAN_KEY = '@plan';
 const USER_RECIPES_KEY = '@userRecipes';
 
@@ -56,16 +69,19 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
     setPlan((prev) => ({ ...prev, [day]: recipe }));
   };
 
-  const isInPlan = (id: number | string) =>
+  const isInPlan = (id: string) =>
     Object.values(plan).some((r) => r?.id === id);
 
   const clearPlan = () => setPlan(initialPlan);
+
   const addUserRecipe = (recipe: Recipe) => {
     setUserRecipes((prev) => [...prev, recipe]);
   };
 
   return (
-    <PlanContext.Provider value={{ plan, addToPlan, isInPlan, clearPlan, userRecipes, addUserRecipe }}>
+    <PlanContext.Provider
+      value={{ plan, addToPlan, isInPlan, clearPlan, userRecipes, addUserRecipe }}
+    >
       {children}
     </PlanContext.Provider>
   );

@@ -24,6 +24,7 @@ export type RootStackParamList = {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+
 const Tabs = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({

@@ -3,92 +3,84 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Button,
+  StyleSheet,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Recipe } from '../types/recipe';
 import { usePlan } from '../context/PlanContext';
-
-// ✅ Firestore eklemeleri
-import { db } from '../firebase/firebaseConfig';
-import { collection, addDoc } from 'firebase/firestore';
+import { Recipe } from '../types/recipe';
 
 const AddRecipeScreen = () => {
+  const { addUserRecipe } = usePlan();
+  const navigation = useNavigation();
+
   const [name, setName] = useState('');
   const [cuisine, setCuisine] = useState('');
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState('');
   const [ingredients, setIngredients] = useState('');
   const [instructions, setInstructions] = useState('');
-  const navigation = useNavigation();
-  const { addUserRecipe } = usePlan();
 
-  const handleSubmit = async () => {
-    if (!name || !cuisine || !ingredients || !instructions) {
-      Alert.alert('Lütfen tüm alanları doldurun.');
-      return;
-    }
-
+  const handleAdd = () => {
     const newRecipe: Recipe = {
-      id: Date.now(),
+      id: Date.now().toString(), // 🔥 string ID ürettik
       name,
       cuisine,
-      ingredients: ingredients.split(',').map((i) => i.trim()),
+      category,
+      tags: tags.split(',').map((t) => t.trim()),
+      ingredients: ingredients.split('\n').map((i) => i.trim()),
       instructions,
     };
 
-    try {
-      // 🔥 Firestore'a kaydet
-      await addDoc(collection(db, 'recipes'), newRecipe);
-
-      // Context içine de ekle
-      addUserRecipe(newRecipe);
-
-      Alert.alert('✅ Tarif eklendi!');
-      setName('');
-      setCuisine('');
-      setIngredients('');
-      setInstructions('');
-      navigation.goBack();
-    } catch (error) {
-      console.error('Tarif eklenemedi:', error);
-      Alert.alert('❌ Tarif eklenemedi. Lütfen tekrar deneyin.');
-    }
+    addUserRecipe(newRecipe);
+    navigation.goBack();
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>➕ Tarif Ekle</Text>
+      <Text style={styles.title}>➕ Yeni Tarif Ekle</Text>
 
       <TextInput
-        style={styles.input}
         placeholder="Tarif Adı"
+        style={styles.input}
         value={name}
         onChangeText={setName}
       />
       <TextInput
+        placeholder="Mutfak Türü"
         style={styles.input}
-        placeholder="Mutfak Türü (örn: Türk, İtalyan)"
         value={cuisine}
         onChangeText={setCuisine}
       />
       <TextInput
-        style={styles.textArea}
-        placeholder="Malzemeler (virgülle ayırın)"
-        value={ingredients}
-        onChangeText={setIngredients}
-        multiline
+        placeholder="Kategori (kahvaltı, öğle yemeği, vb.)"
+        style={styles.input}
+        value={category}
+        onChangeText={setCategory}
       />
       <TextInput
-        style={styles.textArea}
-        placeholder="Yapılış Talimatları"
+        placeholder="Etiketler (virgülle)"
+        style={styles.input}
+        value={tags}
+        onChangeText={setTags}
+      />
+      <TextInput
+        placeholder="Malzemeler (her satıra bir malzeme)"
+        style={[styles.input, { height: 100 }]}
+        multiline
+        value={ingredients}
+        onChangeText={setIngredients}
+      />
+      <TextInput
+        placeholder="Hazırlanışı"
+        style={[styles.input, { height: 100 }]}
+        multiline
         value={instructions}
         onChangeText={setInstructions}
-        multiline
       />
 
-      <Button title="Tarifi Kaydet" onPress={handleSubmit} />
+      <Button title="Tarifi Kaydet" onPress={handleAdd} />
     </ScrollView>
   );
 };
@@ -97,32 +89,21 @@ export default AddRecipeScreen;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 16,
     backgroundColor: '#FAFAFA',
-    flexGrow: 1,
   },
-  header: {
-    fontSize: 24,
+  title: {
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
   },
   input: {
     backgroundColor: '#fff',
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 16,
-    fontSize: 16,
-    elevation: 2,
-  },
-  textArea: {
-    backgroundColor: '#fff',
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 16,
-    fontSize: 16,
-    height: 100,
-    textAlignVertical: 'top',
-    elevation: 2,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
 });

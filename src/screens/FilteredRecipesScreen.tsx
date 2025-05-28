@@ -1,4 +1,3 @@
-// src/screens/FilteredRecipesScreen.tsx
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -13,6 +12,7 @@ import { db } from '../firebase/firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { Recipe } from '../types/recipe';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 type FilteredRecipesRouteProp = RouteProp<RootStackParamList, 'FilteredRecipes'>;
 
 const tags = ['vegan', 'sağlıklı', 'diyet'];
@@ -28,7 +28,10 @@ const FilteredRecipesScreen = () => {
   useEffect(() => {
     const fetchRecipes = async () => {
       const snapshot = await getDocs(collection(db, 'recipes'));
-      const data: Recipe[] = snapshot.docs.map((doc) => doc.data() as Recipe);
+      const data: Recipe[] = snapshot.docs.map((doc) => ({
+        id: doc.id, // 🔥 Firestore doküman ID'si kullanılıyor
+        ...(doc.data() as Omit<Recipe, 'id'>),
+      }));
       setRecipes(data);
     };
     fetchRecipes();
@@ -44,7 +47,6 @@ const FilteredRecipesScreen = () => {
     <View style={styles.container}>
       <Text style={styles.header}>{category.toUpperCase()}</Text>
 
-      {/* Filtre butonları */}
       <View style={styles.filters}>
         {tags.map((tag) => (
           <TouchableOpacity
@@ -71,7 +73,7 @@ const FilteredRecipesScreen = () => {
 
       <FlatList
         data={filteredRecipes}
-        keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
@@ -91,23 +93,9 @@ const FilteredRecipesScreen = () => {
 export default FilteredRecipesScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-    padding: 16,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  filters: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
+  container: { flex: 1, backgroundColor: '#FAFAFA', padding: 16 },
+  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
+  filters: { flexDirection: 'row', marginBottom: 12, flexWrap: 'wrap', justifyContent: 'center' },
   filterButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -116,16 +104,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     marginBottom: 6,
   },
-  selectedFilter: {
-    backgroundColor: '#2196f3',
-  },
-  filterText: {
-    color: '#000',
-  },
-  selectedText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+  selectedFilter: { backgroundColor: '#2196f3' },
+  filterText: { color: '#000' },
+  selectedText: { color: '#fff', fontWeight: 'bold' },
   card: {
     backgroundColor: '#fff',
     padding: 16,
@@ -133,12 +114,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 2,
   },
-  name: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  cuisine: {
-    fontSize: 14,
-    color: '#777',
-  },
+  name: { fontSize: 18, fontWeight: '600' },
+  cuisine: { fontSize: 14, color: '#777' },
 });

@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigators/MainNavigator';
 import { usePlan, Day } from '../context/PlanContext';
-import { Picker } from '@react-native-picker/picker'; // yüklenmediyse: npm install @react-native-picker/picker
+import { Picker } from '@react-native-picker/picker';
 
 const RecipeDetailScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'RecipeDetail'>>();
@@ -21,8 +27,9 @@ const RecipeDetailScreen = () => {
   ];
 
   const [selectedDay, setSelectedDay] = useState<Day>('Pazartesi');
-  const alreadyInPlan = plan[selectedDay]?.id === recipe.id;
 
+  // 🔍 Sadece seçili gün için kontrol ediyoruz (önceki tüm hataları engeller!)
+  const alreadyInPlan = plan[selectedDay]?.id === recipe.id;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
