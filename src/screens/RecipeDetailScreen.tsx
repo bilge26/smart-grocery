@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigators/MainNavigator';
-import { usePlan, Day } from '../context/PlanContext';
+import { usePlan, Day, Meal } from '../context/PlanContext';
 import { Picker } from '@react-native-picker/picker';
 
 const RecipeDetailScreen = () => {
@@ -26,10 +26,12 @@ const RecipeDetailScreen = () => {
     'Pazar',
   ];
 
-  const [selectedDay, setSelectedDay] = useState<Day>('Pazartesi');
+  const meals: Meal[] = ['kahvaltı', 'öğle', 'akşam', 'tatlı'];
 
-  // 🔍 Sadece seçili gün için kontrol ediyoruz (önceki tüm hataları engeller!)
-  const alreadyInPlan = plan[selectedDay]?.id === recipe.id;
+  const [selectedDay, setSelectedDay] = useState<Day>('Pazartesi');
+  const [selectedMeal, setSelectedMeal] = useState<Meal>('akşam');
+
+  const alreadyInPlan = plan[selectedDay]?.[selectedMeal]?.id === recipe.id;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -57,9 +59,20 @@ const RecipeDetailScreen = () => {
         ))}
       </Picker>
 
+      <Text style={styles.sub}>Öğün Seç:</Text>
+      <Picker
+        selectedValue={selectedMeal}
+        onValueChange={(value) => setSelectedMeal(value as Meal)}
+        style={styles.picker}
+      >
+        {meals.map((meal) => (
+          <Picker.Item key={meal} label={meal} value={meal} />
+        ))}
+      </Picker>
+
       <Button
-        title={alreadyInPlan ? 'Zaten Eklendi' : `${selectedDay} Gününe Ekle`}
-        onPress={() => addToPlan(selectedDay, recipe)}
+        title={alreadyInPlan ? 'Zaten Eklendi' : `${selectedDay} - ${selectedMeal} için Ekle`}
+        onPress={() => addToPlan(selectedDay, selectedMeal, recipe)}
         disabled={alreadyInPlan}
       />
     </ScrollView>
@@ -71,6 +84,7 @@ export default RecipeDetailScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: '#FAFAFA',
   },
   title: {
     fontSize: 22,
@@ -85,3 +99,4 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
 });
+

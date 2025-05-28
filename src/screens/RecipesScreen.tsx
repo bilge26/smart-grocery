@@ -38,16 +38,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#FAFAFA',
+    paddingTop: 40,
   },
   header: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
   },
   categoryCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 20,
     marginBottom: 12,
     elevation: 3,
@@ -63,3 +64,4 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+

@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import { usePlan } from '../context/PlanContext';
 
-// Basit sayı + isim ayrıştırıcı (örn: "2 yumurta")
 const parseIngredient = (ingredient: string): { name: string; quantity: number } => {
   const match = ingredient.match(/^(\d+)\s+(.*)$/);
   if (match) {
@@ -32,8 +31,13 @@ const ShoppingListScreen = () => {
     const combined: Record<string, number> = {};
 
     Object.values(plan)
+  .filter((dayPlan) => dayPlan !== null)
+  .flatMap((dayPlan) =>
+    Object.values(dayPlan!)
       .filter((r) => r && Array.isArray(r.ingredients))
       .flatMap((r) => r!.ingredients)
+  )
+
       .forEach((item) => {
         const { name, quantity } = parseIngredient(item);
         if (combined[name]) {
@@ -96,6 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#FAFAFA',
+    paddingTop: 40,
   },
   title: {
     fontSize: 24,

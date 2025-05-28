@@ -1,6 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { usePlan } from '../context/PlanContext';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { usePlan, Meal } from '../context/PlanContext';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigators/MainNavigator';
 
 const getTodayDayName = (): keyof ReturnType<typeof usePlan>['plan'] => {
   const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
@@ -8,23 +11,41 @@ const getTodayDayName = (): keyof ReturnType<typeof usePlan>['plan'] => {
   return days[todayIndex] as keyof ReturnType<typeof usePlan>['plan'];
 };
 
+const mealLabels: Record<Meal, string> = {
+  kahvaltı: '🍳 Kahvaltı',
+  öğle: '🥗 Öğle Yemeği',
+  akşam: '🍽 Akşam Yemeği',
+  tatlı: '🍰 Tatlı',
+};
+
 const HomeScreen = () => {
   const { plan } = usePlan();
   const today = getTodayDayName();
-  const todayRecipe = plan[today];
+  const todayPlan = plan[today];
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>📅 Bugünün Planı</Text>
       <View style={styles.card}>
-        {todayRecipe ? (
-          <>
-            <Text style={styles.recipeTitle}>{todayRecipe.name}</Text>
-            <Text style={styles.recipeDetail}>Mutfak: {todayRecipe.cuisine}</Text>
-          </>
-        ) : (
-          <Text style={styles.empty}>Henüz bir tarif seçilmedi.</Text>
-        )}
+        {Object.keys(mealLabels).map((meal) => {
+          const mealKey = meal as Meal;
+          const recipe = todayPlan?.[mealKey];
+
+          return (
+            <View key={mealKey} style={styles.mealBlock}>
+              <Text style={styles.mealLabel}>{mealLabels[mealKey]}</Text>
+              {recipe ? (
+                <TouchableOpacity onPress={() => navigation.navigate('RecipeDetail', { recipe })}>
+                  <Text style={styles.recipeTitle}>{recipe.name}</Text>
+                  <Text style={styles.recipeDetail}>Mutfak: {recipe.cuisine}</Text>
+                </TouchableOpacity>
+              ) : (
+                <Text style={styles.empty}>— Tarif yok</Text>
+              )}
+            </View>
+          );
+        })}
       </View>
     </View>
   );
@@ -33,6 +54,7 @@ const HomeScreen = () => {
 
 export default HomeScreen;
 
+// ...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -48,25 +70,35 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 20,
     shadowColor: '#000',
-    elevation: 3,
+    elevation: 4,
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
   },
+  mealBlock: {
+    marginBottom: 20,
+  },
+  mealLabel: {
+    fontWeight: '600',
+    marginBottom: 4,
+  },
   recipeTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#212121',
   },
   recipeDetail: {
-    marginTop: 10,
-    fontSize: 16,
+    marginTop: 4,
+    fontSize: 15,
     color: '#555',
   },
   empty: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
+    fontSize: 15,
+    color: '#aaa',
+    fontStyle: 'italic',
+    marginLeft: 6,
   },
 });
+

@@ -17,31 +17,47 @@ export type Day =
   | 'Cumartesi'
   | 'Pazar';
 
-type PlanType = Record<Day, Recipe | null>;
+export type Meal = 'kahvaltı' | 'öğle' | 'akşam' | 'tatlı';
+
+type DailyPlan = {
+  kahvaltı: Recipe | null;
+  öğle: Recipe | null;
+  akşam: Recipe | null;
+  tatlı: Recipe | null;
+};
+
+type PlanType = Record<Day, DailyPlan>;
 
 type PlanContextType = {
   plan: PlanType;
-  addToPlan: (day: Day, recipe: Recipe) => void;
+  addToPlan: (day: Day, meal: Meal, recipe: Recipe) => void;
   isInPlan: (id: string) => boolean;
   clearPlan: () => void;
   userRecipes: Recipe[];
   addUserRecipe: (recipe: Recipe) => void;
 };
 
-const initialPlan: PlanType = {
-  Pazartesi: null,
-  Salı: null,
-  Çarşamba: null,
-  Perşembe: null,
-  Cuma: null,
-  Cumartesi: null,
-  Pazar: null,
+const defaultDayPlan: DailyPlan = {
+  kahvaltı: null,
+  öğle: null,
+  akşam: null,
+  tatlı: null,
 };
 
-const PlanContext = createContext<PlanContextType | undefined>(undefined);
+const initialPlan: PlanType = {
+  Pazartesi: { ...defaultDayPlan },
+  Salı: { ...defaultDayPlan },
+  Çarşamba: { ...defaultDayPlan },
+  Perşembe: { ...defaultDayPlan },
+  Cuma: { ...defaultDayPlan },
+  Cumartesi: { ...defaultDayPlan },
+  Pazar: { ...defaultDayPlan },
+};
 
 const PLAN_KEY = '@plan';
 const USER_RECIPES_KEY = '@userRecipes';
+
+const PlanContext = createContext<PlanContextType | undefined>(undefined);
 
 export const PlanProvider = ({ children }: { children: ReactNode }) => {
   const [plan, setPlan] = useState<PlanType>(initialPlan);
@@ -65,12 +81,20 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
     AsyncStorage.setItem(USER_RECIPES_KEY, JSON.stringify(userRecipes));
   }, [userRecipes]);
 
-  const addToPlan = (day: Day, recipe: Recipe) => {
-    setPlan((prev) => ({ ...prev, [day]: recipe }));
+  const addToPlan = (day: Day, meal: Meal, recipe: Recipe) => {
+    setPlan((prev) => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        [meal]: recipe,
+      },
+    }));
   };
 
   const isInPlan = (id: string) =>
-    Object.values(plan).some((r) => r?.id === id);
+    Object.values(plan).some((dayPlan) =>
+      Object.values(dayPlan).some((r) => r?.id === id)
+    );
 
   const clearPlan = () => setPlan(initialPlan);
 
