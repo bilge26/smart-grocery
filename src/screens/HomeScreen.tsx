@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Button,
+} from 'react-native';
 import { usePlan, Meal } from '../context/PlanContext';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,7 +25,7 @@ const mealLabels: Record<Meal, string> = {
 };
 
 const HomeScreen = () => {
-  const { plan } = usePlan();
+  const { plan, streak, activateStreak } = usePlan();
   const today = getTodayDayName();
   const todayPlan = plan[today];
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -27,6 +33,21 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>📅 Bugünün Planı</Text>
+
+      {/* Streak Başlatma veya Gösterme */}
+      {!streak.active ? (
+        <View style={styles.streakBox}>
+          <Text style={styles.streakText}>
+            Sağlıklı beslenme streak’i başlatmak ister misiniz?
+          </Text>
+          <Button title="Streak’i Başlat" onPress={activateStreak} />
+        </View>
+      ) : (
+        <View style={styles.streakActive}>
+          <Text style={styles.streakFire}>🔥 {streak.count} gündür sağlıklı besleniyorsunuz!</Text>
+        </View>
+      )}
+
       <View style={styles.card}>
         {Object.keys(mealLabels).map((meal) => {
           const mealKey = meal as Meal;
@@ -51,16 +72,15 @@ const HomeScreen = () => {
   );
 };
 
-
 export default HomeScreen;
 
-// ...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: '#FAFAFA',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 40,
   },
   header: {
     fontSize: 24,
@@ -68,17 +88,41 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: 'center',
   },
+  streakBox: {
+    marginBottom: 24,
+    backgroundColor: '#FFF3E0',
+    padding: 16,
+    borderRadius: 12,
+  },
+  streakText: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#BF360C',
+    fontWeight: '500',
+  },
+  streakActive: {
+    marginBottom: 24,
+    backgroundColor: '#E0F2F1',
+    padding: 16,
+    borderRadius: 12,
+  },
+  streakFire: {
+    fontSize: 18,
+    color: '#00796B',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 20,
     shadowColor: '#000',
-    elevation: 4,
+    elevation: 3,
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
   },
   mealBlock: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   mealLabel: {
     fontWeight: '600',
@@ -101,4 +145,3 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
-

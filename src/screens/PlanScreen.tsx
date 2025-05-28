@@ -22,7 +22,6 @@ const PlanScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
         <Text style={styles.header}>🗓️ Haftalık Yemek Planı</Text>
         {days.map((day) => (
@@ -48,7 +47,6 @@ const PlanScreen = () => {
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
   );
 };
 

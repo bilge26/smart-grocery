@@ -5,6 +5,7 @@ import {
   Button,
   ScrollView,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigators/MainNavigator';
@@ -14,16 +15,15 @@ import { Picker } from '@react-native-picker/picker';
 const RecipeDetailScreen = () => {
   const route = useRoute<RouteProp<RootStackParamList, 'RecipeDetail'>>();
   const { recipe } = route.params;
-  const { addToPlan, plan } = usePlan();
+  const {
+    plan,
+    addToPlan,
+    streak,
+    resetStreak,
+  } = usePlan();
 
   const days: Day[] = [
-    'Pazartesi',
-    'Salı',
-    'Çarşamba',
-    'Perşembe',
-    'Cuma',
-    'Cumartesi',
-    'Pazar',
+    'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar',
   ];
 
   const meals: Meal[] = ['kahvaltı', 'öğle', 'akşam', 'tatlı'];
@@ -32,6 +32,33 @@ const RecipeDetailScreen = () => {
   const [selectedMeal, setSelectedMeal] = useState<Meal>('akşam');
 
   const alreadyInPlan = plan[selectedDay]?.[selectedMeal]?.id === recipe.id;
+
+  const handleAdd = () => {
+    const isHealthy = recipe.tags?.includes('sağlıklı');
+
+    // Eğer streak aktifse ve tarif sağlıklı değilse uyar
+    if (streak.active && !isHealthy) {
+      Alert.alert(
+        'Streak Uyarısı',
+        `${streak.count} günlük streak'inizi bozmak üzeresiniz. Emin misiniz?`,
+        [
+          {
+            text: 'Hayır',
+            style: 'cancel',
+          },
+          {
+            text: 'Evet, ekle',
+            onPress: () => {
+              resetStreak();
+              addToPlan(selectedDay, selectedMeal, recipe);
+            },
+          },
+        ]
+      );
+    } else {
+      addToPlan(selectedDay, selectedMeal, recipe);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -72,7 +99,7 @@ const RecipeDetailScreen = () => {
 
       <Button
         title={alreadyInPlan ? 'Zaten Eklendi' : `${selectedDay} - ${selectedMeal} için Ekle`}
-        onPress={() => addToPlan(selectedDay, selectedMeal, recipe)}
+        onPress={handleAdd}
         disabled={alreadyInPlan}
       />
     </ScrollView>
@@ -99,4 +126,3 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
 });
-
