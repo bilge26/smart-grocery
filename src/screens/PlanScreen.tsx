@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigators/MainNavigator';
 import MealBlock from '../components/MealBlock';
+import { Recipe } from '../types/recipe';
 
 const days: Day[] = [
   'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar',
@@ -22,12 +23,9 @@ const PlanScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   // 👇 useCallback ile sabit fonksiyon tanımı
-  const handleNavigate = useCallback(
-    (recipe) => {
-      navigation.navigate('RecipeDetail', { recipe });
-    },
-    [navigation]
-  );
+const handleNavigate = useCallback((recipe: Recipe) => {
+  navigation.navigate('RecipeDetail', { recipe });
+}, [navigation]);
 
   return (
     <ScrollView style={styles.container}>
@@ -40,12 +38,12 @@ const PlanScreen = () => {
             const recipe = plan[day]?.[mealKey];
 
             return (
-              <MealBlock
-                key={mealKey}
-                meal={mealKey}
-                recipe={recipe}
-                onPress={recipe ? () => handleNavigate(recipe) : undefined}
-              />
+            <MealBlock
+  key={mealKey}
+  meal={mealKey}
+  recipe={recipe}
+  onPress={recipe ? () => handleNavigate(recipe) : undefined}
+/>
             );
           })}
         </View>

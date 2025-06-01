@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { usePlan } from '../context/PlanContext';
+import ShoppingItem from '../components/ShoppingItem';
+
 
 const parseIngredient = (ingredient: string): { name: string; quantity: number } => {
   const match = ingredient.match(/^(\d+)\s+(.*)$/);
@@ -70,23 +72,13 @@ const ShoppingListScreen = () => {
           data={ingredients}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => toggleItem(item)}
-              style={[
-                styles.itemContainer,
-                checkedItems.includes(item) && styles.checked,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.itemText,
-                  checkedItems.includes(item) && styles.checkedText,
-                ]}
-              >
-                • {item}
-              </Text>
-            </TouchableOpacity>
-          )}
+  <ShoppingItem
+    item={item}
+    checked={checkedItems.includes(item)}
+    onToggle={() => toggleItem(item)}
+  />
+)}
+
         />
       )}
     </View>

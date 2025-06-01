@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigators/MainNavigator';
+import { Button } from 'react-native-paper';
+
 
 const categories = [
   { title: 'Kahvaltı', value: 'kahvaltı', icon: '🍳' },
@@ -27,7 +29,16 @@ const RecipesScreen = () => {
           <Text style={styles.categoryText}>{cat.title}</Text>
         </TouchableOpacity>
       ))}
+      <Button
+  mode="contained"
+  onPress={() => navigation.navigate('AddRecipe')}
+  style={{ marginTop: 16 }}
+>
+  ➕ Yeni Tarif Ekle
+</Button>
+
     </View>
+    
   );
 };
 

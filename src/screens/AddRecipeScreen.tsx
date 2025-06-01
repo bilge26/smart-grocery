@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Text, TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { usePlan } from '../context/PlanContext';
 import { Recipe } from '../types/recipe';
@@ -24,7 +18,7 @@ const AddRecipeScreen = () => {
 
   const handleAdd = () => {
     const newRecipe: Recipe = {
-      id: Date.now().toString(), // 🔥 string ID ürettik
+      id: Date.now().toString(),
       name,
       cuisine,
       category,
@@ -42,45 +36,60 @@ const AddRecipeScreen = () => {
       <Text style={styles.title}>➕ Yeni Tarif Ekle</Text>
 
       <TextInput
-        placeholder="Tarif Adı"
-        style={styles.input}
+        label="Tarif Adı"
         value={name}
         onChangeText={setName}
+        mode="outlined"
+        style={styles.input}
       />
       <TextInput
-        placeholder="Mutfak Türü"
-        style={styles.input}
+        label="Mutfak Türü"
         value={cuisine}
         onChangeText={setCuisine}
+        mode="outlined"
+        style={styles.input}
       />
       <TextInput
-        placeholder="Kategori (kahvaltı, öğle yemeği, vb.)"
-        style={styles.input}
+        label="Kategori"
         value={category}
         onChangeText={setCategory}
+        mode="outlined"
+        style={styles.input}
       />
       <TextInput
-        placeholder="Etiketler (virgülle)"
-        style={styles.input}
+        label="Etiketler (virgülle)"
         value={tags}
         onChangeText={setTags}
+        mode="outlined"
+        style={styles.input}
       />
       <TextInput
-        placeholder="Malzemeler (her satıra bir malzeme)"
-        style={[styles.input, { height: 100 }]}
-        multiline
+        label="Malzemeler (her satıra bir)"
         value={ingredients}
         onChangeText={setIngredients}
+        mode="outlined"
+        multiline
+        numberOfLines={4}
+        style={styles.input}
       />
       <TextInput
-        placeholder="Hazırlanışı"
-        style={[styles.input, { height: 100 }]}
-        multiline
+        label="Hazırlanışı"
         value={instructions}
         onChangeText={setInstructions}
+        mode="outlined"
+        multiline
+        numberOfLines={4}
+        style={styles.input}
       />
 
-      <Button title="Tarifi Kaydet" onPress={handleAdd} />
+      <Button
+        mode="contained"
+        onPress={handleAdd}
+        style={styles.button}
+        contentStyle={{ paddingVertical: 6 }}
+      >
+        Tarifi Kaydet
+      </Button>
     </ScrollView>
   );
 };
@@ -89,21 +98,21 @@ export default AddRecipeScreen;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 20,
     backgroundColor: '#FAFAFA',
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 24,
     textAlign: 'center',
   },
   input: {
+    marginBottom: 14,
     backgroundColor: '#fff',
-    padding: 12,
+  },
+  button: {
+    marginTop: 12,
     borderRadius: 8,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
   },
 });

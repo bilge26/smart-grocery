@@ -12,6 +12,8 @@ import { db } from '../firebase/firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { Recipe } from '../types/recipe';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import RecipeCard from '../components/RecipeCard';
+
 
 type FilteredRecipesRouteProp = RouteProp<RootStackParamList, 'FilteredRecipes'>;
 
@@ -75,16 +77,14 @@ const FilteredRecipesScreen = () => {
         data={filteredRecipes}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() =>
-              navigation.navigate('RecipeDetail', { recipe: item })
-            }
-          >
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.cuisine}>{item.cuisine}</Text>
-          </TouchableOpacity>
-        )}
+  <RecipeCard
+    recipe={item}
+    onPress={() =>
+      navigation.navigate('RecipeDetail', { recipe: item })
+    }
+  />
+)}
+
       />
     </View>
   );
