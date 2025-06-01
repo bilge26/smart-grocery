@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { usePlan, Day, Meal } from '../context/PlanContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigators/MainNavigator';
+import MealBlock from '../components/MealBlock';
 
 const days: Day[] = [
   'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar',
@@ -21,37 +21,38 @@ const PlanScreen = () => {
   const { plan } = usePlan();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  // 👇 useCallback ile sabit fonksiyon tanımı
+  const handleNavigate = useCallback(
+    (recipe) => {
+      navigation.navigate('RecipeDetail', { recipe });
+    },
+    [navigation]
+  );
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
-        <Text style={styles.header}>🗓️ Haftalık Yemek Planı</Text>
-        {days.map((day) => (
-          <View key={day} style={styles.card}>
-            <Text style={styles.day}>{day}</Text>
-            {Object.keys(mealLabels).map((meal) => {
-              const mealKey = meal as Meal;
-              const recipe = plan[day]?.[mealKey];
-              return (
-                <View key={mealKey} style={styles.mealBlock}>
-                  <Text style={styles.mealLabel}>{mealLabels[mealKey]}</Text>
-                  {recipe ? (
-                    <TouchableOpacity onPress={() => navigation.navigate('RecipeDetail', { recipe })}>
-                      <Text style={styles.recipe}>{recipe.name}</Text>
-                      <Text style={styles.cuisine}>Mutfak: {recipe.cuisine}</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <Text style={styles.empty}>— Tarif yok</Text>
-                  )}
-                </View>
-              );
-            })}
-          </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>🗓️ Haftalık Yemek Planı</Text>
+      {days.map((day) => (
+        <View key={day} style={styles.card}>
+          <Text style={styles.day}>{day}</Text>
+          {Object.keys(mealLabels).map((meal) => {
+            const mealKey = meal as Meal;
+            const recipe = plan[day]?.[mealKey];
+
+            return (
+              <MealBlock
+                key={mealKey}
+                meal={mealKey}
+                recipe={recipe}
+                onPress={recipe ? () => handleNavigate(recipe) : undefined}
+              />
+            );
+          })}
+        </View>
+      ))}
+    </ScrollView>
   );
 };
-
 
 export default PlanScreen;
 
@@ -79,25 +80,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-  },
-  mealBlock: {
-    marginBottom: 12,
-  },
-  mealLabel: {
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  recipe: {
-    fontSize: 16,
-    color: '#212121',
-  },
-  cuisine: {
-    color: '#666',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  empty: {
-    color: '#aaa',
-    fontStyle: 'italic',
   },
 });
