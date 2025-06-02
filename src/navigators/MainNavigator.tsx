@@ -12,6 +12,7 @@ import ShoppingListScreen from '../screens/ShoppingListScreen';
 import AddRecipeScreen from '../screens/AddRecipeScreen';
 import { Recipe } from '../types/recipe';
 import FilteredRecipesScreen from '../screens/FilteredRecipesScreen';
+import SuggestRecipeScreen from '../screens/SuggestRecipeScreen';
 
 
 export type RootStackParamList = {
@@ -19,6 +20,7 @@ export type RootStackParamList = {
   RecipeDetail: { recipe: Recipe };
   AddRecipe: undefined;
   FilteredRecipes: { category: string };
+  SuggestRecipe: undefined;
 };
 
 const Tab = createBottomTabNavigator();
@@ -69,6 +71,11 @@ const MainNavigator = () => (
   options={({ route }) => ({
     title: `${route.params.category} Tarifleri`,
   })}
+/>
+      <Stack.Screen
+  name="SuggestRecipe"
+  component={SuggestRecipeScreen}
+  options={{ title: 'Tarif Önerici' }}
 />
     </Stack.Navigator>
   </NavigationContainer>

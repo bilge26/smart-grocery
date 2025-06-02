@@ -36,6 +36,14 @@ const RecipesScreen = () => {
 >
   ➕ Yeni Tarif Ekle
 </Button>
+<Button
+  mode="outlined"
+  onPress={() => navigation.navigate('SuggestRecipe')}
+  style={{ marginTop: 12 }}
+>
+  🧠 Akıllı Tarif Önerici
+</Button>
+
 
     </View>
     

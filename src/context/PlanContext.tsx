@@ -67,6 +67,7 @@ const initialPlan: PlanType = {
 const PLAN_KEY = '@plan';
 const USER_RECIPES_KEY = '@userRecipes';
 const STREAK_KEY = '@healthyStreak';
+const PLAN_LAST_UPDATE_KEY = '@lastPlanUpdateDate'; // 🆕 yeni key
 
 const defaultStreak: StreakState = {
   active: false,
@@ -96,12 +97,14 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   const [userRecipes, setUserRecipes] = useState<Recipe[]>([]);
   const [streak, setStreak] = useState<StreakState>(defaultStreak);
   const [loaded, setLoaded] = useState(false);
+  const [lastPlanUpdate, setLastPlanUpdate] = useState<string>(''); // 🆕
 
   useEffect(() => {
     const loadData = async () => {
       const savedPlan = await AsyncStorage.getItem(PLAN_KEY);
       const savedRecipes = await AsyncStorage.getItem(USER_RECIPES_KEY);
       const savedStreak = await AsyncStorage.getItem(STREAK_KEY);
+      const savedLastUpdate = await AsyncStorage.getItem(PLAN_LAST_UPDATE_KEY); // 🆕
 
       if (savedPlan) setPlan(JSON.parse(savedPlan));
       if (savedRecipes) setUserRecipes(JSON.parse(savedRecipes));
@@ -110,15 +113,41 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setStreak(defaultStreak);
       }
+      if (savedLastUpdate) setLastPlanUpdate(savedLastUpdate); // 🆕
 
       setLoaded(true);
     };
     loadData();
   }, []);
 
+  // 🆕 PLAN HAFTALIK SIFIRLAMA
+const evaluateWeeklyReset = async () => {
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+
+  const savedDateStr = lastPlanUpdate;
+  const savedDate = savedDateStr ? new Date(savedDateStr) : null;
+
+  const daysDiff = savedDate
+    ? Math.floor((today.getTime() - savedDate.getTime()) / (1000 * 60 * 60 * 24))
+    : null;
+
+  // ❗ DÜZELTİLMİŞ KOŞUL: sadece 7 gün geçtiyse sıfırla
+  if (!savedDate || (daysDiff !== null && daysDiff >= 7)) {
+    const emptyPlan = initialPlan;
+    setPlan(emptyPlan);
+    await AsyncStorage.setItem(PLAN_KEY, JSON.stringify(emptyPlan)); // 🔁 yeniden kaydet
+    await AsyncStorage.setItem(PLAN_LAST_UPDATE_KEY, todayStr);
+    setLastPlanUpdate(todayStr);
+  }
+};
+
+
   useEffect(() => {
     if (loaded) {
       AsyncStorage.setItem(PLAN_KEY, JSON.stringify(plan));
+      AsyncStorage.setItem(PLAN_LAST_UPDATE_KEY, getTodayDate()); // 🆕
+      setLastPlanUpdate(getTodayDate()); // 🆕
     }
   }, [plan, loaded]);
 
@@ -137,6 +166,10 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (loaded) evaluateTodayStreak();
   }, [plan]);
+
+  useEffect(() => {
+    if (loaded) evaluateWeeklyReset(); // 🆕
+  }, [loaded]);
 
   const addToPlan = (day: Day, meal: Meal, recipe: Recipe) => {
     setPlan((prev) => ({
@@ -208,35 +241,33 @@ export const PlanProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const evaluateTodayStreak = () => {
-  if (!streak.active) return;
+    if (!streak.active) return;
 
-  const today = getTodayDate();
-  const dayName = getTodayDayName();
-  const todayPlan = plan[dayName];
+    const today = getTodayDate();
+    const dayName = getTodayDayName();
+    const todayPlan = plan[dayName];
 
-  // HATA KONTROLÜ: Plan verisi yoksa işlemi iptal et
-  if (!todayPlan) return;
+    if (!todayPlan) return;
 
-  const allHealthy = Object.values(todayPlan).every(
-    (r) => r && r.tags?.includes('sağlıklı')
-  );
+    const allHealthy = Object.values(todayPlan).every(
+      (r) => r && r.tags?.includes('sağlıklı')
+    );
 
-  if (!allHealthy || streak.lastUpdateDate === today) return;
+    if (!allHealthy || streak.lastUpdateDate === today) return;
 
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yDate = yesterday.toISOString().split('T')[0];
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yDate = yesterday.toISOString().split('T')[0];
 
-  setStreak({
-    active: true,
-    count:
-      streak.lastUpdateDate === yDate || streak.lastUpdateDate === ''
-        ? streak.count + 1
-        : 1,
-    lastUpdateDate: today,
-  });
-};
-
+    setStreak({
+      active: true,
+      count:
+        streak.lastUpdateDate === yDate || streak.lastUpdateDate === ''
+          ? streak.count + 1
+          : 1,
+      lastUpdateDate: today,
+    });
+  };
 
   return (
     <PlanContext.Provider
